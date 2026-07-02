@@ -5,8 +5,11 @@ on:
     branches:
       - master
 
+permissions:
+  contents: write
+
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -22,3 +25,14 @@ jobs:
         run: echo "Secret is present and stored safely"
         env:
           API_KEY: ${{ secrets.API_KEY }}
+
+  deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./
